@@ -11,6 +11,8 @@ public class ApplicationDbContext : DbContext
     {
     }
 
+    public DbSet<AdminUser> AdminUsers { get; set; }
+
     public DbSet<Product> Products { get; set; }
 
     public DbSet<Customer> Customers { get; set; }
@@ -22,6 +24,32 @@ public class ApplicationDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        // =========================
+        // AdminUser
+        // =========================
+
+        modelBuilder.Entity<AdminUser>()
+            .HasKey(u => u.Id);
+
+        modelBuilder.Entity<AdminUser>()
+            .Property(u => u.FullName)
+            .IsRequired()
+            .HasMaxLength(150);
+
+        modelBuilder.Entity<AdminUser>()
+            .Property(u => u.Email)
+            .IsRequired()
+            .HasMaxLength(200);
+
+        modelBuilder.Entity<AdminUser>()
+            .HasIndex(u => u.Email)
+            .IsUnique();
+
+        modelBuilder.Entity<AdminUser>()
+            .Property(u => u.PasswordHash)
+            .IsRequired()
+            .HasMaxLength(500);
 
         // =========================
         // Product

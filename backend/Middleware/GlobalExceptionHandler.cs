@@ -1,3 +1,4 @@
+using AdvancedOrderSystem.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 
 namespace AdvancedOrderSystem.Middleware;
@@ -21,8 +22,17 @@ public class GlobalExceptionHandler : IExceptionHandler
             ArgumentException =>
                 (StatusCodes.Status400BadRequest, exception.Message),
 
+            AuthenticationFailedException =>
+                (StatusCodes.Status401Unauthorized, exception.Message),
+
+            ForbiddenException =>
+                (StatusCodes.Status403Forbidden, exception.Message),
+
             KeyNotFoundException =>
                 (StatusCodes.Status404NotFound, exception.Message),
+
+            ConflictException =>
+                (StatusCodes.Status409Conflict, exception.Message),
 
             _ =>
                 (StatusCodes.Status500InternalServerError,
