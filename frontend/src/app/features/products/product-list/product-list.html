@@ -1,0 +1,183 @@
+<div class="flex flex-col gap-6">
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+    <div>
+      <h1 class="page-title">Products</h1>
+      <p class="mt-1 text-sm text-slate-500">Active products available for ordering.</p>
+    </div>
+    @if (!showCreateForm()) {
+      <button type="button" class="btn btn-primary" (click)="openCreateForm()">New product</button>
+    }
+  </div>
+
+  @if (successMessage()) {
+    <app-alert type="success">{{ successMessage() }}</app-alert>
+  }
+
+  @if (showCreateForm()) {
+    <section class="card">
+      <h2 class="card-title">New product</h2>
+      <form [formGroup]="createForm" (ngSubmit)="createProduct()" novalidate class="p-4">
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div class="sm:col-span-2">
+            <label for="product-name" class="form-label">Name</label>
+            <input
+              id="product-name"
+              type="text"
+              formControlName="name"
+              [attr.maxlength]="nameMaxLength"
+              class="form-control"
+              [class.is-invalid]="showError(createForm.controls.name, createSubmitted())"
+              placeholder="e.g. Wireless Mouse"
+            />
+            @if (showError(createForm.controls.name, createSubmitted())) {
+              <p class="form-error">
+                Name is required and can be at most {{ nameMaxLength }} characters.
+              </p>
+            }
+          </div>
+
+          <div class="sm:col-span-2">
+            <label for="product-sku" class="form-label">SKU</label>
+            <input
+              id="product-sku"
+              type="text"
+              formControlName="sku"
+              [attr.maxlength]="skuMaxLength"
+              class="form-control uppercase placeholder:normal-case"
+              [class.is-invalid]="showError(createForm.controls.sku, createSubmitted())"
+              placeholder="e.g. MOU-002"
+            />
+            @if (showError(createForm.controls.sku, createSubmitted())) {
+              <p class="form-error">
+                SKU is required and can be at most {{ skuMaxLength }} characters.
+              </p>
+            } @else {
+              <p class="form-hint">Must be unique. Saved in upper case.</p>
+            }
+          </div>
+
+          <div class="sm:col-span-1 lg:col-span-2">
+            <label for="product-price" class="form-label">Unit price</label>
+            <input
+              id="product-price"
+              type="number"
+              min="0.01"
+              step="0.01"
+              formControlName="unitPrice"
+              class="form-control"
+              [class.is-invalid]="showError(createForm.controls.unitPrice, createSubmitted())"
+              placeholder="0.00"
+            />
+            @if (showError(createForm.controls.unitPrice, createSubmitted())) {
+              <p class="form-error">Price must be greater than 0.</p>
+            }
+          </div>
+
+          <div class="sm:col-span-1 lg:col-span-2">
+            <label for="product-stock" class="form-label">Stock</label>
+            <input
+              id="product-stock"
+              type="number"
+              min="0"
+              step="1"
+              formControlName="stock"
+              class="form-control"
+              [class.is-invalid]="showError(createForm.controls.stock, createSubmitted())"
+            />
+            @if (showError(createForm.controls.stock, createSubmitted())) {
+              <p class="form-error">Stock must be a whole number of 0 or more.</p>
+            }
+          </div>
+        </div>
+
+        @if (createError()) {
+          <div class="mt-4">
+            <app-alert type="error">{{ createError() }}</app-alert>
+          </div>
+        }
+
+        <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+          <button type="button" class="btn btn-secondary" (click)="closeCreateForm()">Cancel</button>
+          <button type="submit" class="btn btn-primary" [disabled]="creating()">
+            {{ creating() ? 'Saving…' : 'Create product' }}
+          </button>
+        </div>
+      </form>
+    </section>
+  }
+
+  <section class="card overflow-hidden">
+    <div class="border-b border-slate-200 p-4">
+      <label for="product-search" class="sr-only">Search products</label>
+      <input
+        id="product-search"
+        type="search"
+        class="form-control sm:max-w-sm"
+        placeholder="Search by name or SKU…"
+        [value]="search()"
+        (input)="search.set($any($event.target).value)"
+      />
+    </div>
+
+    @if (error()) {
+      <div class="p-4">
+        <app-alert type="error">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <span>{{ error() }}</span>
+            <button type="button" class="btn btn-secondary btn-sm" (click)="retry()">
+              Try again
+            </button>
+          </div>
+        </app-alert>
+      </div>
+    } @else if (loading() && products().length === 0) {
+      <p class="p-6 text-sm text-slate-500">Loading products…</p>
+    } @else if (products().length === 0) {
+      <div class="px-6 py-12 text-center">
+        @if (search().trim()) {
+          <p class="font-medium text-slate-900">No products match "{{ search().trim() }}".</p>
+        } @else {
+          <p class="font-medium text-slate-900">No products yet.</p>
+          <p class="mt-1 text-sm text-slate-500">Create a product to start taking orders.</p>
+        }
+      </div>
+    } @else {
+      <div class="overflow-x-auto transition-opacity" [class.opacity-60]="loading()">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">SKU</th>
+              <th scope="col" class="text-right">Unit price</th>
+              <th scope="col" class="text-right">Stock</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (product of products(); track product.id) {
+              <tr>
+                <td class="font-medium text-slate-900">{{ product.name }}</td>
+                <td class="font-mono text-xs text-slate-500">{{ product.sku }}</td>
+                <td class="text-right tabular-nums">{{ product.unitPrice | money }}</td>
+                <td class="text-right">
+                  @if (product.stock === 0) {
+                    <span class="rounded-full bg-rose-50 px-2 py-0.5 text-xs font-medium text-rose-700">
+                      Out of stock
+                    </span>
+                  } @else if (product.stock < lowStockThreshold) {
+                    <span
+                      class="rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700 tabular-nums"
+                    >
+                      {{ product.stock }} · Low
+                    </span>
+                  } @else {
+                    <span class="tabular-nums">{{ product.stock }}</span>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</div>

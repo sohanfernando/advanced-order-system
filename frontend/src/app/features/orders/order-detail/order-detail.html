@@ -1,0 +1,121 @@
+@let current = order();
+
+<div class="flex flex-col gap-6">
+  <div>
+    <a routerLink="/orders" class="link text-sm">← Back to orders</a>
+  </div>
+
+  @if (loading() && !current) {
+    <div class="card p-6 text-sm text-slate-500">Loading order…</div>
+  } @else if (notFound()) {
+    <div class="card px-6 py-12 text-center">
+      <h1 class="page-title">Order not found</h1>
+      <p class="mt-2 text-sm text-slate-500">Order #{{ id() }} doesn't exist.</p>
+      <a routerLink="/orders" class="btn btn-primary mt-6">View all orders</a>
+    </div>
+  } @else if (error()) {
+    <app-alert type="error">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <span>{{ error() }}</span>
+        <button type="button" class="btn btn-secondary btn-sm" (click)="retry()">Try again</button>
+      </div>
+    </app-alert>
+  } @else if (current) {
+    @if (successMessage()) {
+      <app-alert type="success">{{ successMessage() }}</app-alert>
+    }
+    @if (actionError()) {
+      <app-alert type="error">{{ actionError() }}</app-alert>
+    }
+
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div>
+        <div class="flex flex-wrap items-center gap-3">
+          <h1 class="page-title">Order #{{ current.id }}</h1>
+          <app-status-badge [status]="current.status" />
+        </div>
+        <p class="mt-1 text-sm text-slate-500">
+          Placed on {{ current.orderDate | utcDate | date: 'medium' }}
+        </p>
+      </div>
+
+      @if (current.status === 'Confirmed') {
+        <button
+          type="button"
+          class="btn btn-danger"
+          [disabled]="cancelling()"
+          (click)="cancelOrder()"
+        >
+          {{ cancelling() ? 'Cancelling…' : 'Cancel order' }}
+        </button>
+      }
+    </div>
+
+    <div class="grid gap-6 lg:grid-cols-3">
+      <section class="card overflow-hidden lg:col-span-2">
+        <h2 class="card-title">Items ({{ current.items.length }})</h2>
+        <div class="overflow-x-auto">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Product</th>
+                <th scope="col" class="text-right">Unit price</th>
+                <th scope="col" class="text-right">Qty</th>
+                <th scope="col" class="text-right">Line total</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of current.items; track item.id) {
+                <tr>
+                  <td class="font-medium text-slate-900">{{ item.productName }}</td>
+                  <td class="text-right text-slate-600 tabular-nums">{{ item.unitPrice | money }}</td>
+                  <td class="text-right tabular-nums">{{ item.quantity }}</td>
+                  <td class="text-right font-medium tabular-nums">{{ item.lineTotal | money }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <div class="flex flex-col gap-6">
+        <section class="card">
+          <h2 class="card-title">Customer</h2>
+          <div class="p-4 text-sm">
+            <p class="font-medium text-slate-900">{{ current.customerName }}</p>
+            <a
+              routerLink="/orders"
+              [queryParams]="{ customerId: current.customerId }"
+              class="link mt-2 inline-block"
+            >
+              View this customer's orders
+            </a>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2 class="card-title">Summary</h2>
+          <dl class="space-y-3 p-4 text-sm">
+            <div class="flex justify-between">
+              <dt class="text-slate-500">Subtotal</dt>
+              <dd class="tabular-nums">{{ current.subtotal | money }}</dd>
+            </div>
+            <div class="flex justify-between">
+              <dt class="text-slate-500">Discount ({{ discountPercent() | number: '1.0-2' }}%)</dt>
+              <dd class="text-rose-600 tabular-nums">− {{ current.discountAmount | money }}</dd>
+            </div>
+            <div class="flex justify-between border-t border-slate-200 pt-3 text-base font-semibold">
+              <dt>Total</dt>
+              <dd class="tabular-nums">{{ current.total | money }}</dd>
+            </div>
+          </dl>
+          @if (current.status === 'Cancelled') {
+            <p class="border-t border-slate-200 p-4 text-xs text-slate-500">
+              This order was cancelled and its items were returned to stock.
+            </p>
+          }
+        </section>
+      </div>
+    </div>
+  }
+</div>

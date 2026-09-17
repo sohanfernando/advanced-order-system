@@ -1,0 +1,96 @@
+@import 'tailwindcss';
+
+@layer base {
+  body {
+    @apply min-h-screen bg-slate-50 text-slate-900 antialiased;
+  }
+
+  /* Tailwind v4 no longer sets a pointer cursor on buttons */
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+@layer components {
+  .page-title {
+    @apply text-2xl font-semibold tracking-tight text-slate-900;
+  }
+
+  .card {
+    @apply rounded-xl border border-slate-200 bg-white shadow-sm;
+  }
+
+  .card-title {
+    @apply border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-900;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-sm {
+    @apply px-3 py-1.5 text-xs;
+  }
+
+  .btn-primary {
+    @apply bg-indigo-600 text-white hover:bg-indigo-500 focus-visible:outline-indigo-600 disabled:hover:bg-indigo-600;
+  }
+
+  .btn-secondary {
+    @apply border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 focus-visible:outline-slate-400 disabled:hover:bg-white;
+  }
+
+  .btn-danger {
+    @apply bg-rose-600 text-white hover:bg-rose-500 focus-visible:outline-rose-600 disabled:hover:bg-rose-600;
+  }
+
+  .btn-ghost {
+    @apply text-slate-500 hover:bg-slate-100 hover:text-slate-700 focus-visible:outline-slate-400;
+  }
+
+  .link {
+    @apply font-medium text-indigo-600 hover:text-indigo-500 hover:underline;
+  }
+
+  .form-label {
+    @apply mb-1 block text-sm font-medium text-slate-700;
+  }
+
+  .form-control {
+    @apply block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none disabled:bg-slate-100 disabled:text-slate-500;
+  }
+
+  .form-control.is-invalid {
+    @apply border-rose-400 focus:border-rose-500 focus:ring-rose-500/20;
+  }
+
+  .form-error {
+    @apply mt-1 text-xs text-rose-600;
+  }
+
+  .form-hint {
+    @apply mt-1 text-xs text-slate-500;
+  }
+
+  .table {
+    @apply min-w-full divide-y divide-slate-200 text-sm;
+  }
+
+  .table thead {
+    @apply bg-slate-50 text-left text-xs font-semibold tracking-wide text-slate-500 uppercase;
+  }
+
+  .table th,
+  .table td {
+    @apply px-4 py-3 whitespace-nowrap;
+  }
+
+  .table tbody {
+    @apply divide-y divide-slate-100;
+  }
+
+  .table tbody tr {
+    @apply hover:bg-slate-50;
+  }
+}

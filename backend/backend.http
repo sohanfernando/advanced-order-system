@@ -1,0 +1,68 @@
+@backend_HostAddress = http://localhost:5264
+
+### Products
+
+GET {{backend_HostAddress}}/api/products?search=
+Accept: application/json
+
+###
+
+GET {{backend_HostAddress}}/api/products/1
+Accept: application/json
+
+###
+
+POST {{backend_HostAddress}}/api/products
+Content-Type: application/json
+
+{
+  "name": "USB Cable",
+  "sku": "usb-001",
+  "unitPrice": 1200.00,
+  "stock": 50
+}
+
+### Customers
+
+GET {{backend_HostAddress}}/api/customers
+Accept: application/json
+
+###
+
+GET {{backend_HostAddress}}/api/customers/1
+Accept: application/json
+
+### Orders
+
+POST {{backend_HostAddress}}/api/orders
+Content-Type: application/json
+
+{
+  "customerId": 1,
+  "discountPercent": 10,
+  "items": [
+    { "productId": 2, "quantity": 2 },
+    { "productId": 3, "quantity": 1 }
+  ]
+}
+
+###
+
+GET {{backend_HostAddress}}/api/orders?status=Confirmed&page=1&pageSize=10
+Accept: application/json
+
+###
+
+GET {{backend_HostAddress}}/api/orders/1
+Accept: application/json
+
+###
+
+PATCH {{backend_HostAddress}}/api/orders/1/cancel
+
+### OpenAPI document (Development only)
+
+GET {{backend_HostAddress}}/openapi/v1.json
+Accept: application/json
+
+###
