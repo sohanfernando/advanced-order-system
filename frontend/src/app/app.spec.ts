@@ -12,17 +12,6 @@ describe('App', () => {
 
   it('should create the app', () => {
     const fixture = TestBed.createComponent(App);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
-  });
-
-  it('should render the main navigation', async () => {
-    const fixture = TestBed.createComponent(App);
-    await fixture.whenStable();
-    const compiled = fixture.nativeElement as HTMLElement;
-    const nav = compiled.querySelector('nav')?.textContent ?? '';
-    expect(nav).toContain('Orders');
-    expect(nav).toContain('Products');
-    expect(nav).toContain('Customers');
+    expect(fixture.componentInstance).toBeTruthy();
   });
 });

@@ -1,0 +1,70 @@
+<app-auth-card heading="Sign in" subheading="Admin access to the order dashboard.">
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="flex flex-col gap-4">
+    @if (successMessage()) {
+      <app-alert type="success">{{ successMessage() }}</app-alert>
+    }
+
+    <div>
+      <label for="email" class="form-label">Email</label>
+      <input
+        id="email"
+        type="email"
+        autocomplete="username"
+        formControlName="email"
+        class="form-control"
+        [class.is-invalid]="showError(form.controls.email, submitted())"
+        placeholder="admin@example.com"
+      />
+      @if (showError(form.controls.email, submitted())) {
+        <p class="form-error">Enter a valid email address.</p>
+      }
+    </div>
+
+    <div>
+      <label for="password" class="form-label">Password</label>
+      <div class="relative">
+        <input
+          id="password"
+          [type]="showPassword() ? 'text' : 'password'"
+          autocomplete="current-password"
+          formControlName="password"
+          class="form-control pr-16"
+          [class.is-invalid]="showError(form.controls.password, submitted())"
+        />
+        <button
+          type="button"
+          class="absolute inset-y-0 right-0 px-3 text-xs font-medium text-slate-500 hover:text-slate-700"
+          [attr.aria-pressed]="showPassword()"
+          (click)="togglePassword()"
+        >
+          {{ showPassword() ? 'Hide' : 'Show' }}
+        </button>
+      </div>
+      @if (showError(form.controls.password, submitted())) {
+        <p class="form-error">Password is required.</p>
+      }
+    </div>
+
+    <label class="flex items-center gap-2 text-sm text-slate-700">
+      <input
+        type="checkbox"
+        formControlName="rememberMe"
+        class="size-4 rounded border-slate-300 accent-indigo-600"
+      />
+      Remember me for 7 days
+    </label>
+
+    @if (error()) {
+      <app-alert type="error">{{ error() }}</app-alert>
+    }
+
+    <button type="submit" class="btn btn-primary w-full" [disabled]="submitting()">
+      {{ submitting() ? 'Signing in…' : 'Sign in' }}
+    </button>
+  </form>
+
+  <p footer>
+    Don't have an account?
+    <a routerLink="/register" class="link">Create one</a>
+  </p>
+</app-auth-card>

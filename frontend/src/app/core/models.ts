@@ -75,3 +75,24 @@ export interface CreateOrderRequest {
   discountPercent: number;
   items: { productId: number; quantity: number }[];
 }
+
+export interface AuthUser {
+  id: number;
+  fullName: string;
+  email: string;
+  role: string;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+  rememberMe: boolean;
+}
+
+export interface RegisterRequest {
+  fullName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  registrationKey: string;
+}

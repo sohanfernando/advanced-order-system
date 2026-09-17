@@ -11,7 +11,10 @@
         <span>{{ appName }}</span>
       </a>
 
-      <nav class="order-last -mx-1 flex w-full gap-1 overflow-x-auto sm:order-0 sm:w-auto" aria-label="Main">
+      <nav
+        class="order-last -mx-1 flex w-full gap-1 overflow-x-auto sm:order-0 sm:w-auto"
+        aria-label="Main"
+      >
         @for (link of navLinks; track link.path) {
           <a
             [routerLink]="link.path"
@@ -24,7 +27,25 @@
         }
       </nav>
 
-      <a routerLink="/orders/new" class="btn btn-primary btn-sm ml-auto">+ New order</a>
+      <div class="ml-auto flex items-center gap-3">
+        <a routerLink="/orders/new" class="btn btn-primary btn-sm">+ New order</a>
+
+        @if (user(); as currentUser) {
+          <div class="hidden text-right leading-tight md:block">
+            <p class="text-sm font-medium text-slate-900">{{ currentUser.fullName }}</p>
+            <p class="text-xs text-slate-500">{{ currentUser.email }}</p>
+          </div>
+        }
+
+        <button
+          type="button"
+          class="btn btn-secondary btn-sm"
+          [disabled]="signingOut()"
+          (click)="signOut()"
+        >
+          {{ signingOut() ? 'Signing out…' : 'Sign out' }}
+        </button>
+      </div>
     </div>
   </header>
 
